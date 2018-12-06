@@ -10,7 +10,7 @@ matrix:
           packages:
             - qtbase5-dbg qtbase5-dev qtbase5-dev-tools
             - valgrind
-            - g++
+            - gcc g++
             - doxygen
       env:
         - QMAKESPEC=linux-g++
