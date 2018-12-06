@@ -7,7 +7,7 @@ matrix:
         apt:
           sources:
           packages:
-            - qtbase5-dbg qtbase5-dev qtbase5-dev-tools
+            - qtbase5-dbg qtbase5-dev
             - valgrind
             - gcc g++
             - doxygen
@@ -23,7 +23,7 @@ matrix:
         apt:
           sources:
           packages:
-            - qtbase5-dbg qtbase5-dev qtbase5-dev-tools
+            - qtbase5-dbg qtbase5-dev
             - valgrind
             - clang
             - doxygen
