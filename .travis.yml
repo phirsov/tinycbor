@@ -1,9 +1,8 @@
 language: cpp
-os: linux
-dist: trusty
 matrix:
   include:
     - os: linux
+      dist: trusty
       addons:
         apt:
           sources:
@@ -18,6 +17,24 @@ matrix:
         - CFLAGS="-Os"
         - LDFLAGS="-Wl,--no-undefined -lm"
         - QMAKEFLAGS="-config release"
+    - os: linux
+      dist: trusty
+      addons:
+        apt:
+          sources:
+          packages:
+            - qtbase5-dbg qtbase5-dev qtbase5-dev-tools
+            - valgrind
+            - clang
+            - doxygen
+      env:
+        - QMAKESPEC=linux-clang
+        - EVAL="CC=clang && CXX=clang++"
+        - PATH=$PATH:/usr/local/clang/bin
+        - CFLAGS="-Oz"
+        - LDFLAGS="-Wl,--no-undefined -lm"
+        - QMAKEFLAGS="-config release"
+        - MAKEFLAGS=-s
     - os: linux
       addons:
         apt:
@@ -34,6 +51,22 @@ matrix:
         - CFLAGS="-Os"
         - LDFLAGS="-Wl,--no-undefined -lm"
         - QMAKEFLAGS="-config release"
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - sourceline: 'ppa:beineri/opt-qt596-trusty'
+          packages:
+            - qt59base
+      env:
+        - QMAKESPEC=linux-clang
+        - EVAL="CC=clang-5.0 && CXX=clang++"
+        - PATH=$PATH:/usr/local/clang/bin
+        - CFLAGS="-Oz"
+        - LDFLAGS="-Wl,--no-undefined -lm"
+        - QMAKEFLAGS="-config release"
+        - MAKEFLAGS=-s
     - os: linux
       env:
         - QMAKESPEC=linux-gcc-freestanding
