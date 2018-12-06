@@ -115,7 +115,7 @@ all: .config \
 	tinycbor.pc
 all: $(if $(JSON2CBOR_SOURCES),bin/json2cbor)
 check: tests/Makefile | $(BINLIBRARY)
-	$(MAKE) -C tests check
+	$(MAKE) -C tests all check
 silentcheck: | $(BINLIBRARY)
 	TESTARGS=-silent $(MAKE) -f $(MAKEFILE) -s check
 configure: .config
