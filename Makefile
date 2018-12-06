@@ -73,7 +73,7 @@ ifeq ($(origin QMAKE),file)
     ifneq ($(call check_qmake,$(QMAKE)),5)
       QMAKE := qmake-qt5
       ifneq ($(call check_qmake,$(QMAKE)),5)
-        QMAKE := @echo >&2 $(MAKEFILE): Cannot find a Qt 5 qmake; false
+        QMAKE := echo >&2 $(MAKEFILE): Cannot find a Qt 5 qmake; false
       endif
     endif
   endif
@@ -166,7 +166,7 @@ tinycbor.pc: tinycbor.pc.in
 		-e 's,@version@,$(VERSION),'
 
 tests/Makefile: tests/tests.pro
-	cd tests && $(QMAKE) $(QMAKEFLAGS)
+	-cd tests && $(QMAKE) $(QMAKEFLAGS)
 
 $(PACKAGE).tar.gz: | .git
 	GIT_DIR=$(SRCDIR).git $(GIT_ARCHIVE) --format=tar.gz -o "$(PACKAGE).tar.gz" HEAD
