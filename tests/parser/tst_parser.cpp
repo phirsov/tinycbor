@@ -123,7 +123,7 @@ static CborError qstring_printf(void *out, const char *fmt, ...)
     if (act_size != buf_size - 1) 
         return CborErrorIO;
 
-    *str += QString::fromLocal8Bit(buf.data(), buf.size());
+    *str += QString::fromLocal8Bit(buf.data(), act_size);
 
     return CborNoError;
 };
