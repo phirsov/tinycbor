@@ -236,7 +236,7 @@ CborError encodeVariant(CborEncoder *encoder, const QVariant &v)
         if (type == QVariant::List || type == qMetaTypeId<IndeterminateLengthArray>()) {
             CborEncoder sub;
             QVariantList list = v.toList();
-            size_t len = list.length();
+            size_t len = list.size();
             if (type == qMetaTypeId<IndeterminateLengthArray>()) {
                 len = CborIndefiniteLength;
                 list = v.value<IndeterminateLengthArray>();
@@ -254,7 +254,7 @@ CborError encodeVariant(CborEncoder *encoder, const QVariant &v)
         if (type == qMetaTypeId<Map>() || type == qMetaTypeId<IndeterminateLengthMap>()) {
             CborEncoder sub;
             Map map = v.value<Map>();
-            size_t len = map.length();
+            size_t len = map.size();
             if (type == qMetaTypeId<IndeterminateLengthMap>()) {
                 len = CborIndefiniteLength;
                 map = v.value<IndeterminateLengthMap>();
