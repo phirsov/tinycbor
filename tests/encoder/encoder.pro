@@ -1,6 +1,7 @@
+include($$PWD/../cpp11.pri)
 SOURCES += tst_encoder.cpp
 
-CONFIG += testcase parallel_test c++11
+CONFIG += testcase parallel_test
 QT = core testlib
 
 INCLUDEPATH += ../../src
