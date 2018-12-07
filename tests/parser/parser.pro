@@ -1,3 +1,5 @@
+include($$PWD/../cpp11.pri)
+
 SOURCES += tst_parser.cpp ../../src/cborparser.c
 
 CONFIG += testcase parallel_test c++11
