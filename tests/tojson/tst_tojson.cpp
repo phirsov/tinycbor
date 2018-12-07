@@ -658,10 +658,10 @@ void compareMetaData(QByteArray data, const QString &expected, int otherFlags = 
         CborParser parser;
         CborValue first;
         CborError err = cbor_parser_init(reinterpret_cast<const quint8 *>(data.constData()), data.length(), 0, &parser, &first);
-        QVERIFY2(!err, QByteArrayLiteral(": Got error \"") + cbor_error_string(err) + "\"");
+        QVERIFY2(!err, QByteArray(": Got error \"") + cbor_error_string(err) + "\"");
 
         err = parseOne(&first, &decoded, CborConvertAddMetadata | otherFlags);
-        QVERIFY2(!err, QByteArrayLiteral(": Got error \"") + cbor_error_string(err) +
+        QVERIFY2(!err, QByteArray(": Got error \"") + cbor_error_string(err) +
                  "\"; decoded stream:\n" + decoded.toLatin1());
 
         // check that we consumed everything
