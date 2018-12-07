@@ -2,7 +2,7 @@ include($$PWD/../cpp11.pri)
 
 SOURCES += tst_parser.cpp ../../src/cborparser.c
 
-CONFIG += testcase parallel_test c++11
+CONFIG += testcase parallel_test
 QT = core testlib
 DEFINES += CBOR_PARSER_MAX_RECURSIONS=16
 
