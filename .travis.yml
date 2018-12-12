@@ -82,6 +82,10 @@ matrix:
         - TESTARGS=-silent
         - PATH=/usr/local/opt/qt5/bin:$PATH
 install:
+  - if [ "${TRAVIS_OS_NAME}" == "osx" ]; then
+        brew update;
+        brew install qt5;
+    fi
 script:
   - PATH=`echo /opt/qt*/bin`:$PATH
   - eval "$EVAL"
