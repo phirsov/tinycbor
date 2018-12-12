@@ -170,7 +170,7 @@ QVariant make_ilmap(const std::initializer_list<QPair<QVariant, QVariant>> &list
 {
     return QVariant::fromValue(
         list.size() > 0 ? IndeterminateLengthMap(list) : IndeterminateLengthMap()
-    );  
+    );
 }
 
 static inline bool isOomError(CborError err)

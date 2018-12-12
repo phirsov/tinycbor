@@ -109,18 +109,21 @@ static CborError qstring_printf(void *out, const char *fmt, ...)
 
     va_start(va, fmt);
     char c;
-    int buf_size = vsnprintf(&c, 1, fmt, va) + 1; 
+    int buf_size = vsnprintf(&c, 1, fmt, va) + 1;
     va_end(va);
 
-    if (buf_size <= 0)
+    if (buf_size < 0)
         return CborErrorIO;
+
+    else if (buf_size == 0)
+        return CborNoError;
 
     va_start(va, fmt);
     QByteArray buf(buf_size, '\0');
-    int act_size = vsnprintf(buf.data(), buf.size(), fmt, va); 
+    int act_size = vsnprintf(buf.data(), buf.size(), fmt, va);
     va_end(va);
 
-    if (act_size != buf_size - 1) 
+    if (act_size != buf_size - 1)
         return CborErrorIO;
 
     *str += QString::fromLocal8Bit(buf.data(), act_size);

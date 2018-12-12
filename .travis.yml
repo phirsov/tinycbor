@@ -5,6 +5,32 @@ matrix:
       dist: trusty
       addons:
         apt:
+          packages:
+            - qtbase5-dev valgrind
+            - g++
+      env:
+        - QMAKESPEC=linux-g++
+        - EVAL="CC=gcc && CXX=g++"
+        - CFLAGS="-Os"
+        - LDFLAGS="-Wl,--no-undefined -lm"
+        - QMAKEFLAGS="-config release"
+    - os: linux
+      dist: trusty
+      addons:
+        apt:
+          packages:
+            - qtbase5-dev valgrind
+            - clang
+      env:
+        - QMAKESPEC=linux-clang
+        - EVAL="CC=clang && CXX=clang++"
+        - CFLAGS="-Oz"
+        - LDFLAGS="-Wl,--no-undefined -lm"
+        - QMAKEFLAGS="-config release"
+        - MAKEFLAGS=-s
+    - os: linux
+      addons:
+        apt:
           sources:
           packages:
             - qt4-dev-tools
@@ -18,6 +44,43 @@ matrix:
         - QMAKE_CXXFLAGS="-std=c++11"
         - LDFLAGS="-Wl,--no-undefined -lm"
         - QMAKEFLAGS="-config release"
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - sourceline: 'ppa:beineri/opt-qt596-trusty'
+          packages:
+            - qt59base
+      env:
+        - QMAKESPEC=linux-clang
+        - EVAL="CC=clang-5.0 && CXX=clang++"
+        - PATH=$PATH:/usr/local/clang/bin
+        - CFLAGS="-Oz"
+        - LDFLAGS="-Wl,--no-undefined -lm"
+        - QMAKEFLAGS="-config release"
+        - MAKEFLAGS=-s
+    - os: linux
+      env:
+        - QMAKESPEC=linux-gcc-freestanding
+        - EVAL="CXX=false"
+        - CFLAGS="-ffreestanding -Os"
+        - LDFLAGS="-Wl,--no-undefined -lm"
+    - os: linux
+      env:
+        - QMAKESPEC=linux-gcc-no-math
+        - EVAL="CXX=false && touch src/math.h src/float.h"
+        - CFLAGS="-ffreestanding -DCBOR_NO_FLOATING_POINT -Os"
+        - LDFLAGS="-Wl,--no-undefined"
+        - LDLIBS=""
+    - os: osx
+      env:
+        - QMAKESPEC=macx-clang
+        - CFLAGS="-Oz"
+        - QMAKEFLAGS="-config debug"
+        - MAKEFLAGS=-s
+        - TESTARGS=-silent
+        - PATH=/usr/local/opt/qt5/bin:$PATH
 install:
 script:
   - PATH=`echo /opt/qt*/bin`:$PATH
@@ -39,4 +102,4 @@ script:
         (cd tests && make TESTARGS=-silent all check -k
         TESTRUNNER=`which valgrind 2>/dev/null`)
   - make -s clean
-  - #./scripts/update-docs.sh
+  - ./scripts/update-docs.sh
