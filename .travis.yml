@@ -29,9 +29,9 @@ matrix:
         - QMAKEFLAGS="-config release"
         - MAKEFLAGS=-s
     - os: linux
+      dist: trusty
       addons:
         apt:
-          sources:
           packages:
             - qt4-dev-tools
             - valgrind
