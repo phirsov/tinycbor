@@ -33,17 +33,16 @@ matrix:
       addons:
         apt:
           packages:
-            - qt4-dev-tools
-            - valgrind
-            - gcc g++
+            - qt4-dev-tools valgrind
+            - g++
             - doxygen
       env:
         - QMAKESPEC=linux-g++
         - EVAL="CC=gcc && CXX=g++"
         - CFLAGS="-Os"
-        - QMAKE_CXXFLAGS="-std=c++11"
         - LDFLAGS="-Wl,--no-undefined -lm"
         - QMAKEFLAGS="-config release"
+        - QMAKE=qmake
     - os: linux
       addons:
         apt:

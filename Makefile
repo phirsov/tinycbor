@@ -15,7 +15,6 @@ GIT_ARCHIVE = git archive --prefix="$(PACKAGE)/" -9
 INSTALL = install
 INSTALL_DATA = $(INSTALL) -m 644
 INSTALL_PROGRAM = $(INSTALL) -m 755
-QMAKE = qmake
 MKDIR = mkdir -p
 RMDIR = rmdir
 SED = sed
@@ -64,6 +63,22 @@ GIT_DIR := $(strip $(shell git -C $(SRCDIR). rev-parse --git-dir 2> /dev/null))
 VERSION = $(shell cat $(SRCDIR)VERSION)
 SOVERSION = $(shell cut -f1-2 -d. $(SRCDIR)VERSION)
 PACKAGE = tinycbor-$(VERSION)
+
+# Check that QMAKE is Qt 5
+ifneq ($(origin QMAKE),file)
+  $(info Unconditionally use QMAKE value "$(QMAKE)" originated from $(origin QMAKE))
+else
+  check_qmake = $(strip $(shell $(1) -query QT_VERSION 2>/dev/null | cut -b1))
+  ifneq ($(call check_qmake,$(QMAKE)),5)
+    QMAKE := qmake -qt5
+    ifneq ($(call check_qmake,$(QMAKE)),5)
+      QMAKE := qmake-qt5
+      ifneq ($(call check_qmake,$(QMAKE)),5)
+        QMAKE := @echo >&2 $(MAKEFILE): Cannot find a Qt 5 qmake; false
+      endif
+    endif
+  endif
+endif
 
 -include .config
 
