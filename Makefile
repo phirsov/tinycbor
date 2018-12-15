@@ -15,6 +15,7 @@ GIT_ARCHIVE = git archive --prefix="$(PACKAGE)/" -9
 INSTALL = install
 INSTALL_DATA = $(INSTALL) -m 644
 INSTALL_PROGRAM = $(INSTALL) -m 755
+QMAKE = qmake
 MKDIR = mkdir -p
 RMDIR = rmdir
 SED = sed
