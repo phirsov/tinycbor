@@ -35,6 +35,24 @@ template<> char *toString<CborError>(const CborError &err)
 {
     return qstrdup(cbor_error_string(err));
 }
+
+template<> char *toString<CborType>(const CborType &type)
+{
+    const char *repr = "other";
+
+    switch (type)
+    {
+        case CborIntegerType:
+            repr = "int";
+            break;
+    
+        case CborInvalidType:
+            repr = "invalid";
+            break;
+    }
+    
+    return qstrdup(repr);
+}
 }
 
 class tst_Parser : public QObject
@@ -2106,7 +2124,7 @@ void tst_Parser::remaining()
     err = cbor_value_advance(&value);
     QVERIFY2(!err, QByteArray("Got error \"") + cbor_error_string(err) + "\"");
 
-    // QCOMPARE(cbor_value_get_type(&value), CborIntegerType);
+    QCOMPARE(cbor_value_get_type(&value), CborIntegerType);
     err = cbor_value_get_int(&value, &parsed);
     QVERIFY2(!err, QByteArray("Got error \"") + cbor_error_string(err) + "\"");
     QCOMPARE(parsed, 2);
