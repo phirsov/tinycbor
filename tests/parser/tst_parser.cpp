@@ -27,6 +27,7 @@
 #include "cbor.h"
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
 
 Q_DECLARE_METATYPE(CborError)
 namespace QTest {
@@ -99,6 +100,7 @@ private slots:
     void endPointer();
     void recursionLimit_data();
     void recursionLimit();
+    void remaining();
 };
 
 static CborError qstring_printf(void *out, const char *fmt, ...)
@@ -2083,6 +2085,27 @@ void tst_Parser::recursionLimit()
         err = cbor_value_map_find_value(&it, "foo", &dummy);
         QCOMPARE(err, CborErrorNestingTooDeep);
     }
+}
+
+void tst_Parser::remaining()
+{
+    CborParser parser;
+    CborValue value;
+
+    const char* data = "\x01\x02";
+
+    QCOMPARE(cbor_parser_init(reinterpret_cast<const quint8 *>(data), strlen(data), 0, &parser, &value), CborNoError);
+
+    int parsed;
+
+    QCOMPARE(cbor_value_get_type(&value), CborIntegerType);
+    QCOMPARE(cbor_value_get_int(&value, &parsed), CborNoError);
+    QCOMPARE(parsed, 1);
+    QCOMPARE(cbor_value_advance(&value), CborNoError);
+
+    QCOMPARE(cbor_value_get_type(&value), CborIntegerType);
+    QCOMPARE(cbor_value_get_int(&value, &parsed), CborNoError);
+    QCOMPARE(parsed, 2);
 }
 
 QTEST_MAIN(tst_Parser)
