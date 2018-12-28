@@ -118,7 +118,7 @@ private slots:
     void endPointer();
     void recursionLimit_data();
     void recursionLimit();
-    void remaining();
+    void twotoplevel();
 };
 
 static CborError qstring_printf(void *out, const char *fmt, ...)
@@ -2105,12 +2105,12 @@ void tst_Parser::recursionLimit()
     }
 }
 
-void tst_Parser::remaining()
+void tst_Parser::twotoplevel()
 {
     CborParser parser;
     CborValue value;
 
-    const char* data = "\x01\x02";
+    const char *data = "\x01\x02";
 
     QCOMPARE(cbor_parser_init(reinterpret_cast<const quint8 *>(data), strlen(data), 0, &parser, &value), CborNoError);
     
