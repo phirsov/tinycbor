@@ -2094,17 +2094,21 @@ void tst_Parser::remaining()
 
     const char* data = "\x01\x02";
 
-    QCOMPARE(cbor_parser_init(reinterpret_cast<const quint8 *>(data), strlen(data), 0, &parser, &value), CborNoError);
-
+    CborError err = cbor_parser_init(reinterpret_cast<const quint8 *>(data), strlen(data), 0, &parser, &value);
+    QVERIFY2(!err, QByteArray("Got error \"") + cbor_error_string(err) + "\"");
+    
     int parsed;
 
     QCOMPARE(cbor_value_get_type(&value), CborIntegerType);
-    QCOMPARE(cbor_value_get_int(&value, &parsed), CborNoError);
+    err = cbor_value_get_int(&value, &parsed);
+    QVERIFY2(!err, QByteArray("Got error \"") + cbor_error_string(err) + "\"");
     QCOMPARE(parsed, 1);
-    QCOMPARE(cbor_value_advance(&value), CborNoError);
+    err = cbor_value_advance(&value);
+    QVERIFY2(!err, QByteArray("Got error \"") + cbor_error_string(err) + "\"");
 
     QCOMPARE(cbor_value_get_type(&value), CborIntegerType);
-    QCOMPARE(cbor_value_get_int(&value, &parsed), CborNoError);
+    err = cbor_value_get_int(&value, &parsed);
+    QVERIFY2(!err, QByteArray("Got error \"") + cbor_error_string(err) + "\"");
     QCOMPARE(parsed, 2);
 }
 
