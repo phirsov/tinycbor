@@ -397,7 +397,7 @@ void tst_Parser::integers()
 static void addHalfFloat()
 {
     QTest::addColumn<QByteArray>("data");
-    QTest::addColumn<quint16>("expectedRaw");
+    QTest::addColumn<unsigned>("expectedRaw");
     QTest::addColumn<double>("expectedValue");
 
     QTest::newRow("+0") << raw("\x00\x00") << 0U << 0.0;
@@ -421,13 +421,13 @@ static void addHalfFloat()
     QTest::newRow("max") << raw("\x7b\xff") << 0x7bffU << ldexp(1.0, 15) * (2.0 - ldexp(1.0, -10));
     QTest::newRow("-max") << raw("\xfb\xff") << 0xfbffU << ldexp(-1.0, 15) * (2.0 - ldexp(1.0, -10));
 
-    QTest::newRow("inf") << raw("\x7c\x00") << 0x7c00U << INFINITY;
-    QTest::newRow("-inf") << raw("\xfc\x00") << 0xfc00U << -INFINITY;
+    QTest::newRow("inf") << raw("\x7c\x00") << 0x7c00U << double(INFINITY);
+    QTest::newRow("-inf") << raw("\xfc\x00") << 0xfc00U << double(-INFINITY);
 
-    QTest::newRow("nan") << raw("\x7c\x01") << 0x7c01U << NAN;
-    QTest::newRow("nan2") << raw("\xfc\x01") << 0xfc01U << NAN;
-    QTest::newRow("nan3") << raw("\x7e\x00") << 0x7e00U << NAN;
-    QTest::newRow("nan4") << raw("\xfe\x00") << 0xfe00U << NAN;
+    QTest::newRow("nan") << raw("\x7c\x01") << 0x7c01U << double(NAN);
+    QTest::newRow("nan2") << raw("\xfc\x01") << 0xfc01U << double(NAN);
+    QTest::newRow("nan3") << raw("\x7e\x00") << 0x7e00U << double(NAN);
+    QTest::newRow("nan4") << raw("\xfe\x00") << 0xfe00U << double(NAN);
 }
 
 void tst_Parser::halfFloat_data()
@@ -438,7 +438,7 @@ void tst_Parser::halfFloat_data()
 void tst_Parser::halfFloat()
 {
     QFETCH(QByteArray, data);
-    QFETCH(quint16, expectedRaw);
+    QFETCH(unsigned, expectedRaw);
     QFETCH(double, expectedValue);
 
     CborParser parser;
@@ -452,7 +452,7 @@ void tst_Parser::halfFloat()
 
     uint16_t raw;
     cbor_value_get_half_float(&first, &raw);
-    QCOMPARE(quint16(raw), expectedRaw);
+    QCOMPARE(raw, uint16_t(expectedRaw));
 
     double value;
     cbor_value_get_half_float_as_double(&first, &value);
