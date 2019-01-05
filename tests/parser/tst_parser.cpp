@@ -465,7 +465,7 @@ void tst_Parser::halfFloat()
     else if (qIsInf(expectedValue))
         QVERIFY(value == expectedValue);
     else
-        QVERIFY(qAbs(value - expectedValue) < epsilon)
+        QVERIFY(qAbs(value - expectedValue) < epsilon);
 }
 
 void tst_Parser::fixed_data()
