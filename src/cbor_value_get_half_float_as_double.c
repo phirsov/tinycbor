@@ -32,6 +32,7 @@
 
 #include "cborinternal_p.h"
 
+#ifndef CBOR_NO_HALF_FLOAT_TYPE
 /**
  * Retrieves the CBOR half-precision floating point (16-bit) value that \a
  * value points to, converts it to the double and store it in \a result.
@@ -50,3 +51,4 @@ CborError cbor_value_get_half_float_as_double(const CborValue *value, double *re
 
     return CborNoError;
 }
+#endif
