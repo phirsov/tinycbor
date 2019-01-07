@@ -26,6 +26,7 @@
 #include "../../src/cborerrorstrings.c"
 #include "../../src/cborparser.c"
 #include "../../src/cborparser_dup_string.c"
+#include "../../src/cborparser_float.c"
 #include "../../src/cborvalidation.c"
 
 #include <QtTest>
