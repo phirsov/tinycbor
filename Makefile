@@ -27,7 +27,7 @@ TINYCBOR_FREESTANDING_SOURCES = \
 	src/cborencoder.c \
 	src/cborencoder_close_container_checked.c \
 	src/cborparser.c \
-	src/cbor_value_get_half_float_as_double.c \
+	src/cborparser_float.c \
 	src/cborpretty.c \
 #
 CBORDUMP_SOURCES = tools/cbordump/cbordump.c
