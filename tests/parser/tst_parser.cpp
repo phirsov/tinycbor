@@ -454,7 +454,8 @@ void tst_Parser::halfFloat()
     cbor_value_get_half_float(&first, &raw);
     QCOMPARE(raw, uint16_t(expectedRaw));
 
-    double valuef, value;
+    float valuef;
+    double value;
     cbor_value_get_half_float_as_float(&first, &valuef);
     cbor_value_get_half_float_as_double(&first, &value);
 
