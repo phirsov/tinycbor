@@ -461,18 +461,13 @@ void tst_Parser::halfFloat()
 
     const double epsilon = ldexp(1.0, -25);
 
-    if (qIsNaN(expectedValue))
-    {
+    if (qIsNaN(expectedValue)) {
         QVERIFY(qIsNaN(valuef));
         QVERIFY(qIsNaN(value));
-    }
-    else if (qIsInf(expectedValue))
-    {
+    } else if (qIsInf(expectedValue)) {
         QVERIFY(valuef == (float)expectedValue);
         QVERIFY(value == expectedValue);
-    }
-    else
-    {
+    } else {
         QVERIFY(qAbs(valuef - (float)expectedValue) < epsilon);
         QVERIFY(qAbs(value - expectedValue) < epsilon);
     }
