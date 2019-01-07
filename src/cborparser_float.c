@@ -35,11 +35,29 @@
 #ifndef CBOR_NO_HALF_FLOAT_TYPE
 /**
  * Retrieves the CBOR half-precision floating point (16-bit) value that \a
+ * value points to, converts it to the float and store it in \a result.
+ * If the iterator \a value does not point to a half-precision floating
+ * point value, the behavior is undefined, so checking with \ref
+ * cbor_value_get_type or with \ref cbor_value_is_half_float is recommended.
+ * \sa cbor_value_get_type(), cbor_value_is_valid(), cbor_value_is_half_float(), cbor_value_get_half_float(), cbor_value_get_half_float_as_double(), cbor_value_get_float()
+ */
+CborError cbor_value_get_half_float_as_float(const CborValue *value, float *result)
+{
+    uint16_t v;
+
+    v = _cbor_value_get_half_float_helper(value);
+
+    *result = decode_halff((unsigned short)v);
+
+    return CborNoError;
+}
+/**
+ * Retrieves the CBOR half-precision floating point (16-bit) value that \a
  * value points to, converts it to the double and store it in \a result.
  * If the iterator \a value does not point to a half-precision floating
  * point value, the behavior is undefined, so checking with \ref
  * cbor_value_get_type or with \ref cbor_value_is_half_float is recommended.
- * \sa cbor_value_get_type(), cbor_value_is_valid(), cbor_value_is_half_float(), cbor_value_get_half_float(), cbor_value_get_float()
+ * \sa cbor_value_get_type(), cbor_value_is_valid(), cbor_value_is_half_float(), cbor_value_get_half_float(), cbor_value_get_half_float_as_float(), cbor_value_get_float()
  */
 CborError cbor_value_get_half_float_as_double(const CborValue *value, double *result)
 {

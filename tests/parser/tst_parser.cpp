@@ -454,18 +454,27 @@ void tst_Parser::halfFloat()
     cbor_value_get_half_float(&first, &raw);
     QCOMPARE(raw, uint16_t(expectedRaw));
 
-    double value;
+    double valuef, value;
+    cbor_value_get_half_float_as_float(&first, &valuef);
     cbor_value_get_half_float_as_double(&first, &value);
 
     const double epsilon = ldexp(1.0, -25);
 
     if (qIsNaN(expectedValue))
+    {
+        QVERIFY(qIsNaN(valuef));
         QVERIFY(qIsNaN(value));
-
+    }
     else if (qIsInf(expectedValue))
+    {
+        QVERIFY(valuef == (float)expectedValue);
         QVERIFY(value == expectedValue);
+    }
     else
+    {
+        QVERIFY(qAbs(valuef - (float)expectedValue) < epsilon);
         QVERIFY(qAbs(value - expectedValue) < epsilon);
+    }
 }
 
 void tst_Parser::fixed_data()
