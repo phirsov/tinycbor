@@ -237,6 +237,7 @@ CBOR_INLINE_API CborError cbor_encode_undefined(CborEncoder *encoder)
 
 CBOR_INLINE_API CborError cbor_encode_half_float(CborEncoder *encoder, const void *value)
 { return cbor_encode_floating_point(encoder, CborHalfFloatType, value); }
+CBOR_API CborError cbor_encode_float_as_half_float(CborEncoder *encoder, float value);
 CBOR_INLINE_API CborError cbor_encode_float(CborEncoder *encoder, float value)
 { return cbor_encode_floating_point(encoder, CborFloatType, &value); }
 CBOR_INLINE_API CborError cbor_encode_double(CborEncoder *encoder, double value)

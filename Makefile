@@ -26,6 +26,7 @@ TINYCBOR_FREESTANDING_SOURCES = \
 	src/cborerrorstrings.c \
 	src/cborencoder.c \
 	src/cborencoder_close_container_checked.c \
+	src/cborencoder_float.c \
 	src/cborparser.c \
 	src/cborparser_float.c \
 	src/cborpretty.c \
