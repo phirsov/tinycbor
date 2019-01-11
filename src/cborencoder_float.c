@@ -33,7 +33,7 @@
 #include "cborinternal_p.h"
 
 #ifndef CBOR_NO_HALF_FLOAT_TYPE
-CborError cbor_encode_float_as_half_float(CborEncoder *encoder, float value);
+CborError cbor_encode_float_as_half_float(CborEncoder *encoder, float value)
 {
     uint16_t v = (uint16_t)encode_half(value);
 
