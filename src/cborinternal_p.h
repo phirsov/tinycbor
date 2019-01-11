@@ -47,10 +47,6 @@ static inline double decode_half(unsigned short half)
 {
     return _cvtsh_ss(half);
 }
-static inline float decode_halff(unsigned short half)
-{
-    return (float)_cvtsh_ss(half);
-}
 #  else
 /* software implementation of float-to-fp16 conversions */
 static inline unsigned short encode_half(double val)
@@ -87,19 +83,15 @@ static inline unsigned short encode_half(double val)
 }
 
 /* this function was copied & adapted from RFC 7049 Appendix D */
-static inline float decode_halff(unsigned short half)
+static inline double decode_half(unsigned short half)
 {
     int exp = (half >> 10) & 0x1f;
     int mant = half & 0x3ff;
-    float val;
-    if (exp == 0) val = ldexpf(mant, -24);
-    else if (exp != 31) val = ldexpf(mant + 1024, exp - 25);
+    double val;
+    if (exp == 0) val = ldexp(mant, -24);
+    else if (exp != 31) val = ldexp(mant + 1024, exp - 25);
     else val = mant == 0 ? INFINITY : NAN;
     return half & 0x8000 ? -val : val;
-}
-static inline double decode_half(unsigned short half)
-{
-    return decode_halff(half);
 }
 #  endif
 #endif /* CBOR_NO_HALF_FLOAT_TYPE */

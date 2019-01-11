@@ -495,7 +495,6 @@ CBOR_INLINE_API bool cbor_value_is_half_float(const CborValue *value)
 CBOR_PRIVATE_API uint16_t _cbor_value_get_half_float_helper(const CborValue *value);
 CBOR_API CborError cbor_value_get_half_float(const CborValue *value, void *result);
 CBOR_API CborError cbor_value_get_half_float_as_float(const CborValue *value, float *result);
-CBOR_API CborError cbor_value_get_half_float_as_double(const CborValue *value, double *result);
 
 CBOR_INLINE_API bool cbor_value_is_float(const CborValue *value)
 { return value->type == CborFloatType; }
