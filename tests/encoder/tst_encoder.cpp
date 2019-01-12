@@ -533,7 +533,7 @@ void tst_Encoder::floatAsHalfFloat()
 
     output.prepend('\xf9');
 
-    compare(floatInput, cbor_encode_float_as_half_float, output);
+    compare((float)floatInput, cbor_encode_float_as_half_float, output);
 }
 
 void tst_Encoder::halfFloat_data()
