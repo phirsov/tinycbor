@@ -41,6 +41,10 @@ class tst_Encoder : public QObject
 {
     Q_OBJECT
 private slots:
+    void floatAsHalfFloat_data();
+    void floatAsHalfFloat();
+    void halfFloat_data();
+    void halfFloat();
     void fixed_data();
     void fixed();
     void strings_data();
@@ -272,19 +276,25 @@ CborError encodeVariant(CborEncoder *encoder, const QVariant &v)
     return CborErrorUnknownType;
 }
 
-void compare(const QVariant &input, const QByteArray &output)
+template <typename Input, typename FnUnderTest>
+void compare(Input input, FnUnderTest fn_under_test, const QByteArray &output)
 {
     QByteArray buffer(output.length(), Qt::Uninitialized);
     uint8_t *bufptr = reinterpret_cast<quint8 *>(buffer.data());
     CborEncoder encoder;
     cbor_encoder_init(&encoder, bufptr, buffer.length(), 0);
 
-    QCOMPARE(encodeVariant(&encoder, input), CborNoError);
+    QCOMPARE(fn_under_test(&encoder, input), CborNoError);
     QCOMPARE(encoder.remaining, size_t(1));
     QCOMPARE(cbor_encoder_get_extra_bytes_needed(&encoder), size_t(0));
 
     buffer.resize(int(cbor_encoder_get_buffer_size(&encoder, bufptr)));
     QCOMPARE(buffer, output);
+}
+
+void compare(const QVariant &input, const QByteArray &output)
+{
+    compare(input, encodeVariant, output);
 }
 
 void addColumns()
@@ -470,6 +480,73 @@ void addArraysAndMaps()
     QTest::newRow("array-1(0)") << raw("\x81\xc1\0") << make_list(QVariant::fromValue(Tag{1, 0}));
     QTest::newRow("array-1(map)") << raw("\x81\xc1\xa0") << make_list(QVariant::fromValue(Tag{1, make_map({})}));
     QTest::newRow("map-1(2):3(4)") << raw("\xa1\xc1\2\xc3\4") << make_map({{QVariant::fromValue(Tag{1, 2}), QVariant::fromValue(Tag{3, 4})}});
+}
+
+static void addHalfFloat()
+{
+    QTest::addColumn<QByteArray>("output");
+    QTest::addColumn<unsigned>("rawInput");
+    QTest::addColumn<double>("floatInput");
+
+    QTest::newRow("+0") << raw("\x00\x00") << 0U << 0.0;
+    QTest::newRow("-0") << raw("\x80\x00") << 0x8000U << 0.0;
+
+    QTest::newRow("min.denorm") << raw("\x00\x01") << 1U << ldexp(1.0, -14) * ldexp(1.0, -10);
+    QTest::newRow("-min.denorm") << raw("\x80\x01") << 0x8001U << ldexp(-1.0, -14) * ldexp(1.0, -10);
+
+    QTest::newRow("max.denorm") << raw("\x03\xff") << 0x03ffU << ldexp(1.0, -14) * (1.0 - ldexp(1.0, -10));
+    QTest::newRow("-max.denorm") << raw("\x83\xff") << 0x83ffU << ldexp(-1.0, -14) * (1.0 - ldexp(1.0, -10));
+
+    QTest::newRow("min.norm") << raw("\x04\x00") << 0x0400U << ldexp(1.0, -14);
+    QTest::newRow("-min.norm") << raw("\x84\x00") << 0x8400U << ldexp(-1.0, -14);
+
+    QTest::newRow("1.0") << raw("\x3c\x00") << 0x3c00U << 1.0;
+    QTest::newRow("-1.0") << raw("\xbc\x00") << 0xbc00U << -1.0;
+
+    QTest::newRow("1.5") << raw("\x3e\x00") << 0x3e00U << 1.5;
+    QTest::newRow("-1.5") << raw("\xbe\x00") << 0xbe00U << -1.5;
+
+    QTest::newRow("max") << raw("\x7b\xff") << 0x7bffU << ldexp(1.0, 15) * (2.0 - ldexp(1.0, -10));
+    QTest::newRow("-max") << raw("\xfb\xff") << 0xfbffU << ldexp(-1.0, 15) * (2.0 - ldexp(1.0, -10));
+
+    QTest::newRow("inf") << raw("\x7c\x00") << 0x7c00U << myInf();
+    QTest::newRow("-inf") << raw("\xfc\x00") << 0xfc00U << myNInf();
+
+    QTest::newRow("nan") << raw("\x7c\x01") << 0x7c01U << myNaN();
+
+    QTest::newRow("above max") << raw("\x7c\x00") << 0x7c00U << ldexp(1.0, 15) * 2.0;
+    QTest::newRow("below -max") << raw("\xfc\x00") << 0xfc00U << ldexp(-1.0, 15) * 2.0;
+
+    QTest::newRow("below min.denorm") << raw("\x00\x00") << 0U << ldexp(1.0, -14) * ldexp(1.0, -11);
+    QTest::newRow("above -min.denorm") << raw("\x80\x00") << 0x8000U << ldexp(-1.0, -14) * ldexp(1.0, -11);
+}
+
+void tst_Encoder::floatAsHalfFloat_data()
+{
+    addHalfFloat();
+}
+
+void tst_Encoder::floatAsHalfFloat()
+{
+    QFETCH(double, floatInput);
+    QFETCH(QByteArray, output);
+
+    compare(floatInput, cbor_encode_float_as_half_float, output);
+}
+
+void tst_Encoder::halfFloat_data()
+{
+    addHalfFloat();
+}
+
+void tst_Encoder::halfFloat()
+{
+    QFETCH(unsigned, rawInput);
+    QFETCH(QByteArray, output);
+
+    uint16_t v = (uint16_t)rawInput;
+
+    compare(&v, cbor_encode_half_float, output);
 }
 
 void tst_Encoder::fixed_data()
