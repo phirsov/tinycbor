@@ -537,8 +537,12 @@ void tst_Encoder::floatAsHalfFloat_data()
 
 void tst_Encoder::floatAsHalfFloat()
 {
+    QFETCH(unsigned, rawInput);
     QFETCH(double, floatInput);
     QFETCH(QByteArray, output);
+
+    if (rawInput == 0U || rawInput == 0x8000U)
+        QSKIP("zero values are out of scope of this test case", QTest::SkipSingle);
 
     output.prepend('\xf9');
 
@@ -564,6 +568,9 @@ void tst_Encoder::halfFloat()
 void tst_Encoder::floatAsHalfFloatCloseToZero_data()
 {
     QTest::addColumn<double>("floatInput");
+
+    QTest::newRow("+0") << 0.0;
+    QTest::newRow("-0") << -0.0;
 
     QTest::newRow("below min.denorm") << ldexp(1.0, -14) * ldexp(1.0, -11);
     QTest::newRow("above -min.denorm") << ldexp(-1.0, -14) * ldexp(1.0, -11);
