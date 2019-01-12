@@ -302,7 +302,7 @@ void compare(Input input, FnUnderTest fn_under_test, const QByteArray &output)
 {
     QByteArray buffer(output.length(), Qt::Uninitialized);
 
-    QCOMPARE(encode_one(input, fn_under_test, buffer), CborNoError);
+    QCOMPARE(encodeOne(input, fn_under_test, buffer), CborNoError);
     QCOMPARE(buffer, output);
 }
 
@@ -574,7 +574,7 @@ void tst_Encoder::floatAsHalfFloatCloseToZero()
 
     QByteArray buffer(4, Qt::Uninitialized);
 
-    QCOMPARE(encode_one((float)floatInput, cbor_encode_float_as_half_float, buffer), CborNoError);
+    QCOMPARE(encodeOne((float)floatInput, cbor_encode_float_as_half_float, buffer), CborNoError);
 
     QVERIFY2(
         buffer == raw("\xf9\x00\x00") || buffer == raw("\xf9\x80\x00"),
