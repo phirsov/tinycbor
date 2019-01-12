@@ -531,6 +531,8 @@ void tst_Encoder::floatAsHalfFloat()
     QFETCH(double, floatInput);
     QFETCH(QByteArray, output);
 
+    output.prepend('\xf9');
+
     compare(floatInput, cbor_encode_float_as_half_float, output);
 }
 
@@ -545,6 +547,7 @@ void tst_Encoder::halfFloat()
     QFETCH(QByteArray, output);
 
     uint16_t v = (uint16_t)rawInput;
+    output.prepend('\xf9');
 
     compare(&v, cbor_encode_half_float, output);
 }
