@@ -607,12 +607,16 @@ void tst_Encoder::floatAsHalfFloatNaN()
     encodeOne(myNaNf(), cbor_encode_float_as_half_float, buffer, error);
 
     QCOMPARE(error, CborNoError);
-    QCOMPARE(buffer.size(), 4);
+    QCOMPARE(buffer.size(), 3);
+
+    QCOMPARE((char)buffer[0], '\xf9');
 
     uint16_t exp, mant;
 
-    memcpy(&exp, buffer.constData(), 4);
-    memcpy(&mant, buffer.constData(), 4);
+    const char* encoded_section = buffer.constData() + 1;
+
+    memcpy(&exp, encoded_section, 2);
+    memcpy(&mant, encoded_section, 2);
 
     exp &= 0x7c00U;
     mant &= 0x03ffU;
