@@ -609,20 +609,14 @@ void tst_Encoder::floatAsHalfFloatNaN()
     QCOMPARE(error, CborNoError);
     QCOMPARE(buffer.size(), 3);
 
-    QCOMPARE((char)buffer[0], '\xf9');
+    uint8_t ini_byte = (uint8_t)buffer[0],
+        exp = (uint8_t)buffer[1] & 0x7cU,
+        manth = (uint8_t)buffer[1] & 0x03U,
+        mantl = (uint8_t)buffer[2];
 
-    uint16_t exp, mant;
-
-    const char* encoded_section = buffer.constData() + 1;
-
-    memcpy(&exp, encoded_section, 2);
-    memcpy(&mant, encoded_section, 2);
-
-    exp &= 0x7c00U;
-    mant &= 0x03ffU;
-
-    QCOMPARE(exp, (uint16_t)0x7c00);
-    QVERIFY(mant != 0);
+    QCOMPARE((unsigned)ini_byte, 0xf9U);
+    QCOMPARE((unsigned)exp, 0x7cU);
+    QVERIFY((manth | mantl) != 0);
 }
 
 void tst_Encoder::fixed_data()
