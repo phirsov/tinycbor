@@ -279,30 +279,31 @@ CborError encodeVariant(CborEncoder *encoder, const QVariant &v)
 }
 
 template <typename Input, typename FnUnderTest>
-CborError encodeOne(Input input, FnUnderTest fn_under_test, QByteArray &buffer)
+void encodeOne(Input input, FnUnderTest fn_under_test, QByteArray &buffer, CborError &error)
 {
     uint8_t *bufptr = reinterpret_cast<quint8 *>(buffer.data());
     CborEncoder encoder;
     cbor_encoder_init(&encoder, bufptr, buffer.length(), 0);
 
-    CborError result = fn_under_test(&encoder, input);
+    error = fn_under_test(&encoder, input);
 
-    if (result == CborNoError) {
+    if (error == CborNoError) {
         QCOMPARE(encoder.remaining, size_t(1));
         QCOMPARE(cbor_encoder_get_extra_bytes_needed(&encoder), size_t(0));
 
         buffer.resize(int(cbor_encoder_get_buffer_size(&encoder, bufptr)));
     }
-
-    return result;
 }
 
 template <typename Input, typename FnUnderTest>
 void compare(Input input, FnUnderTest fn_under_test, const QByteArray &output)
 {
     QByteArray buffer(output.length(), Qt::Uninitialized);
+    CborError error;
 
-    QCOMPARE(encodeOne(input, fn_under_test, buffer), CborNoError);
+    encodeOne(input, fn_under_test, buffer, error);
+
+    QCOMPARE(error, CborNoError);
     QCOMPARE(buffer, output);
 }
 
@@ -573,8 +574,11 @@ void tst_Encoder::floatAsHalfFloatCloseToZero()
     QFETCH(double, floatInput);
 
     QByteArray buffer(4, Qt::Uninitialized);
+    CborError error;
 
-    QCOMPARE(encodeOne((float)floatInput, cbor_encode_float_as_half_float, buffer), CborNoError);
+    encodeOne((float)floatInput, cbor_encode_float_as_half_float, buffer, error);
+
+    QCOMPARE(error, CborNoError);
 
     QVERIFY2(
         buffer == raw("\xf9\x00\x00") || buffer == raw("\xf9\x80\x00"),
