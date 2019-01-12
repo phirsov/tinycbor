@@ -45,6 +45,8 @@ private slots:
     void floatAsHalfFloat();
     void halfFloat_data();
     void halfFloat();
+    void floatAsHalfFloatCloseToZero_data();
+    void floatAsHalfFloatCloseToZero();
     void fixed_data();
     void fixed();
     void strings_data();
@@ -277,18 +279,30 @@ CborError encodeVariant(CborEncoder *encoder, const QVariant &v)
 }
 
 template <typename Input, typename FnUnderTest>
-void compare(Input input, FnUnderTest fn_under_test, const QByteArray &output)
+CborError encodeOne(Input input, FnUnderTest fn_under_test, QByteArray &buffer)
 {
-    QByteArray buffer(output.length(), Qt::Uninitialized);
     uint8_t *bufptr = reinterpret_cast<quint8 *>(buffer.data());
     CborEncoder encoder;
     cbor_encoder_init(&encoder, bufptr, buffer.length(), 0);
 
-    QCOMPARE(fn_under_test(&encoder, input), CborNoError);
-    QCOMPARE(encoder.remaining, size_t(1));
-    QCOMPARE(cbor_encoder_get_extra_bytes_needed(&encoder), size_t(0));
+    CborError result = fn_under_test(&encoder, input);
 
-    buffer.resize(int(cbor_encoder_get_buffer_size(&encoder, bufptr)));
+    if (result == CborNoError) {
+        QCOMPARE(encoder.remaining, size_t(1));
+        QCOMPARE(cbor_encoder_get_extra_bytes_needed(&encoder), size_t(0));
+
+        buffer.resize(int(cbor_encoder_get_buffer_size(&encoder, bufptr)));
+    }
+
+    return result;
+}
+
+template <typename Input, typename FnUnderTest>
+void compare(Input input, FnUnderTest fn_under_test, const QByteArray &output)
+{
+    QByteArray buffer(output.length(), Qt::Uninitialized);
+
+    QCOMPARE(encode_one(input, fn_under_test, buffer), CborNoError);
     QCOMPARE(buffer, output);
 }
 
@@ -513,12 +527,6 @@ static void addHalfFloat()
     QTest::newRow("-inf") << raw("\xfc\x00") << 0xfc00U << myNInf();
 
     QTest::newRow("nan") << raw("\x7c\x01") << 0x7c01U << myNaN();
-
-    QTest::newRow("above max") << raw("\x7c\x00") << 0x7c00U << ldexp(1.0, 15) * 2.0;
-    QTest::newRow("below -max") << raw("\xfc\x00") << 0xfc00U << ldexp(-1.0, 15) * 2.0;
-
-    QTest::newRow("below min.denorm") << raw("\x00\x00") << 0U << ldexp(1.0, -14) * ldexp(1.0, -11);
-    QTest::newRow("above -min.denorm") << raw("\x80\x00") << 0x8000U << ldexp(-1.0, -14) * ldexp(1.0, -11);
 }
 
 void tst_Encoder::floatAsHalfFloat_data()
@@ -550,6 +558,27 @@ void tst_Encoder::halfFloat()
     output.prepend('\xf9');
 
     compare(&v, cbor_encode_half_float, output);
+}
+
+void tst_Encoder::floatAsHalfFloatCloseToZero_data()
+{
+    QTest::addColumn<double>("floatInput");
+
+    QTest::newRow("below min.denorm") << ldexp(1.0, -14) * ldexp(1.0, -11);
+    QTest::newRow("above -min.denorm") << ldexp(-1.0, -14) * ldexp(1.0, -11);
+}
+
+void tst_Encoder::floatAsHalfFloatCloseToZero()
+{
+    QFETCH(double, floatInput);
+
+    QByteArray buffer(4, Qt::Uninitialized);
+
+    QCOMPARE(encode_one((float)floatInput, cbor_encode_float_as_half_float, buffer), CborNoError);
+
+    QVERIFY2(
+        buffer == raw("\xf9\x00\x00") || buffer == raw("\xf9\x80\x00"),
+        "Got value " + QByteArray::number(floatInput) + " encoded to: " + buffer);
 }
 
 void tst_Encoder::fixed_data()

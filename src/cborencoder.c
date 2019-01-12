@@ -595,6 +595,8 @@ CborError cbor_encoder_close_container(CborEncoder *encoder, const CborEncoder *
  * Convert the IEEE 754 single-precision (32-bit) floating point value \a value
  * to the IEEE 754 half-precision (16-bit) floating point value and append it
  * to the CBOR stream provided by \a encoder.
+ * The \a value should be in the range of the IEEE 754 half-precision floating point type,
+ * INFINITY, -INFINITY, or NAN, otherwise the behavior of this function is undefined.
  *
  * \sa cbor_encode_floating_point(), cbor_encode_float(), cbor_encode_double()
  */
