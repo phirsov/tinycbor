@@ -47,6 +47,7 @@ private slots:
     void halfFloat();
     void floatAsHalfFloatCloseToZero_data();
     void floatAsHalfFloatCloseToZero();
+    void floatAsHalfFloatNaN();
     void fixed_data();
     void fixed();
     void strings_data();
@@ -527,7 +528,10 @@ static void addHalfFloat()
     QTest::newRow("inf") << raw("\x7c\x00") << 0x7c00U << myInf();
     QTest::newRow("-inf") << raw("\xfc\x00") << 0xfc00U << myNInf();
 
-    QTest::newRow("nan") << raw("\x7c\x01") << 0x7c01U << myNaN();
+    QTest::newRow("nan1") << raw("\x7c\x01") << 0x7c01U << myNaN();
+    QTest::newRow("nan2") << raw("\xfc\x01") << 0xfc01U << myNaN();
+    QTest::newRow("nan3") << raw("\x7e\x00") << 0x7e00U << myNaN();
+    QTest::newRow("nan4") << raw("\xfe\x00") << 0xfe00U << myNaN();
 }
 
 void tst_Encoder::floatAsHalfFloat_data()
@@ -543,6 +547,9 @@ void tst_Encoder::floatAsHalfFloat()
 
     if (rawInput == 0U || rawInput == 0x8000U)
         QSKIP("zero values are out of scope of this test case", QTest::SkipSingle);
+
+    if (qIsNaN(floatInput))
+        QSKIP("NaN values are out of scope of this test case", QTest::SkipSingle);
 
     output.prepend('\xf9');
 
@@ -590,6 +597,28 @@ void tst_Encoder::floatAsHalfFloatCloseToZero()
     QVERIFY2(
         buffer == raw("\xf9\x00\x00") || buffer == raw("\xf9\x80\x00"),
         "Got value " + QByteArray::number(floatInput) + " encoded to: " + buffer);
+}
+
+void tst_Encoder::floatAsHalfFloatNaN()
+{
+    QByteArray buffer(4, Qt::Uninitialized);
+    CborError error;
+
+    encodeOne(myNaNf(), cbor_encode_float_as_half_float, buffer, error);
+
+    QCOMPARE(error, CborNoError);
+    QCOMPARE(buffer.size(), 4);
+
+    uint16_t exp, mant;
+
+    memcpy(&exp, buffer.constData(), 4);
+    memcpy(&mant, buffer.constData(), 4);
+
+    exp &= 0x7c00U;
+    mant &= 0x03ffU;
+
+    QCOMPARE(exp, (uint16_t)0x7c00);
+    QVERIFY(mant != 0);
 }
 
 void tst_Encoder::fixed_data()
